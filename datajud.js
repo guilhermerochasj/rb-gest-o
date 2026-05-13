@@ -1,4 +1,3 @@
-
 // netlify/functions/datajud.js
 // Função serverless que consulta o DataJud pelo servidor (resolve CORS)
 
