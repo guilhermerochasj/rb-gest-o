@@ -1,6 +1,7 @@
 [build]
-  publish = "."
-  functions = "netlify/functions"
+  base = "rb-gestao"
+  publish = "rb-gestao"
+  functions = "rb-gestao/netlify/functions"
 
 [[headers]]
   for = "/*"
