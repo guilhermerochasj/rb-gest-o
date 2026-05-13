@@ -297,6 +297,9 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Despesas
         </a>
         <div class="nav-section" id="nav-sec-cfg">Config</div>
+        <a id="nav-fluxo" onclick="goTo('fluxo')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Fluxo Processual
+        </a>
         <a id="nav-config" onclick="goTo('config')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> Configurações
         </a>
@@ -400,6 +403,18 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
           </div>
           <div id="mon-lista-processos"></div>
         </div>
+      </div>
+
+      <!-- FLUXO PROCESSUAL -->
+      <div id="page-fluxo" class="page">
+        <div class="page-header">
+          <div><h2>Fluxo Processual</h2><p>Acompanhe cada processo do recebimento ao protocolo</p></div>
+        </div>
+        <div class="search-bar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="search-fluxo" placeholder="Buscar cliente ou processo…" oninput="renderFluxo()">
+        </div>
+        <div id="lista-fluxo"></div>
       </div>
 
       <!-- CONFIG -->
@@ -545,6 +560,85 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
   </div>
 </div>
 
+<!-- MODAL DOCUMENTOS -->
+<div class="modal-bg" id="modal-documentos">
+  <div class="modal" style="max-width:600px">
+    <h3 id="mdoc-title">Documentos</h3>
+    <input type="hidden" id="doc-cliente-id">
+    <div style="margin-bottom:16px">
+      <label style="display:flex;align-items:center;gap:10px;padding:14px;background:var(--card2);border:2px dashed var(--border-gold);border-radius:10px;cursor:pointer;transition:border .2s" id="upload-area">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div>
+          <div style="font-size:.84rem;font-weight:500;color:var(--gold)">Clique para anexar arquivo</div>
+          <div style="font-size:.72rem;color:var(--muted2);margin-top:2px">PDF, imagens, Word, Excel — qualquer tipo</div>
+        </div>
+        <input type="file" id="doc-file-input" multiple style="display:none" onchange="uploadArquivos()">
+      </label>
+    </div>
+    <div id="lista-documentos" style="max-height:320px;overflow-y:auto"></div>
+    <div class="form-actions"><button class="btn btn-outline" onclick="closeModal('modal-documentos')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- MODAL ETAPA FLUXO -->
+<div class="modal-bg" id="modal-etapa">
+  <div class="modal">
+    <h3 id="metapa-title">Atualizar Etapa</h3>
+    <input type="hidden" id="etapa-id">
+    <input type="hidden" id="etapa-cliente-id">
+    <div class="form-group">
+      <label>Etapa</label>
+      <select id="etapa-nome">
+        <option>1. Recepção do Cliente</option>
+        <option>2. Coleta de Documentos</option>
+        <option>3. Análise do Caso</option>
+        <option>4. Produção da Petição</option>
+        <option>5. Revisão da Petição</option>
+        <option>6. Protocolo Administrativo</option>
+        <option>7. Protocolo Judicial</option>
+        <option>8. Concluído</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Status</label>
+        <select id="etapa-status">
+          <option value="Pendente">Pendente</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Concluído">Concluído</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Responsável</label>
+        <select id="etapa-responsavel">
+          <option value="">Selecione…</option>
+          <option value="Guilherme">Guilherme</option>
+          <option value="Rubens">Rubens</option>
+          <option value="Colaboradora">Colaboradora</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Data Início</label>
+        <input type="date" id="etapa-inicio">
+      </div>
+      <div class="form-group">
+        <label>Data Conclusão</label>
+        <input type="date" id="etapa-conclusao">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Observações</label>
+      <textarea id="etapa-obs" placeholder="Detalhes da etapa…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-etapa')">Cancelar</button>
+      <button class="btn btn-gold" onclick="salvarEtapa()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL MOVIMENTAÇÃO -->
 <div class="modal-bg" id="modal-movimentacao">
   <div class="modal">
@@ -662,7 +756,7 @@ function goTo(page) {
   document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   const el = document.getElementById('nav-' + page); if (el) el.classList.add('active');
-  ({ dashboard: renderDashboard, clientes: renderClientes, honorarios: renderHonorarios, despesas: renderDespesas, anotacoes: renderNotas, config: renderConfig, monitoramento: renderMonitoramento })[page]?.();
+  ({ dashboard: renderDashboard, clientes: renderClientes, honorarios: renderHonorarios, despesas: renderDespesas, anotacoes: renderNotas, config: renderConfig, monitoramento: renderMonitoramento, fluxo: renderFluxo })[page]?.();
   closeSidebar();
 }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); }
@@ -712,6 +806,7 @@ async function renderClientes() {
       <button class="btn btn-outline btn-sm" onclick="editCliente('${c.id}')">Editar</button>
       <button class="btn btn-danger btn-sm" onclick="delCliente('${c.id}')">Del</button>
       <button class="btn btn-gold btn-sm" onclick="openNovaMovimentacao('${c.id}')">+ Mov.</button>
+      <button class="btn btn-outline btn-sm" onclick="openDocumentos('${c.id}','${c.nome.replace(/'/g,\'\'')}')">📎</button>
     </div></td>
   </tr>`).join('');
 }
@@ -1044,6 +1139,175 @@ const SUPA_KEY = 'sb_publishable_AyWpOhJtRs5L-L9mXfxXpg_ThQfG0Fb';
   document.getElementById('login-screen').style.display='flex';
   selectProfile('colaborador');
 })();
+
+// ─────────────────────────────────────────────
+//  DOCUMENTOS (Supabase Storage)
+// ─────────────────────────────────────────────
+
+const SUPA_URL_DOC = localStorage.getItem('rb_supa_url') || SUPA_URL;
+
+async function openDocumentos(clienteId, nomeCliente) {
+  document.getElementById('doc-cliente-id').value = clienteId;
+  document.getElementById('mdoc-title').textContent = `Documentos — ${nomeCliente}`;
+  openModal('modal-documentos');
+  await listarDocumentos(clienteId);
+}
+
+async function listarDocumentos(clienteId) {
+  const el = document.getElementById('lista-documentos');
+  el.innerHTML = '<div style="font-size:.8rem;color:var(--muted2);padding:10px">Carregando...</div>';
+  const { data, error } = await sb.storage.from('documentos').list(clienteId, { sortBy: { column: 'created_at', order: 'desc' } });
+  if (error || !data?.length) {
+    el.innerHTML = '<div class="empty" style="padding:20px"><p>Nenhum documento anexado</p></div>';
+    return;
+  }
+  el.innerHTML = data.map(f => {
+    const url = `${SUPA_URL_DOC}/storage/v1/object/public/documentos/${clienteId}/${f.name}`;
+    const ext = f.name.split('.').pop().toUpperCase();
+    const kb = f.metadata?.size ? (f.metadata.size/1024).toFixed(0) + ' KB' : '';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0">
+        <div style="background:var(--border-gold);color:var(--gold);padding:4px 7px;border-radius:5px;font-size:.65rem;font-weight:700;flex-shrink:0">${ext}</div>
+        <div style="min-width:0">
+          <div style="font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</div>
+          <div style="font-size:.7rem;color:var(--muted2)">${kb}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <a href="${url}" target="_blank" class="btn btn-outline btn-xs">Abrir</a>
+        <button class="btn btn-danger btn-xs" onclick="deletarDocumento('${clienteId}','${f.name}')">Del</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function uploadArquivos() {
+  const clienteId = document.getElementById('doc-cliente-id').value;
+  const files = document.getElementById('doc-file-input').files;
+  if (!files.length) return;
+  loading(true);
+  for (const file of files) {
+    const path = `${clienteId}/${Date.now()}_${file.name}`;
+    const { error } = await sb.storage.from('documentos').upload(path, file, { upsert: true });
+    if (error) console.error('Upload error:', error);
+  }
+  loading(false);
+  document.getElementById('doc-file-input').value = '';
+  await listarDocumentos(clienteId);
+}
+
+async function deletarDocumento(clienteId, nome) {
+  if (!confirm(`Remover "${nome}"?`)) return;
+  loading(true);
+  await sb.storage.from('documentos').remove([`${clienteId}/${nome}`]);
+  loading(false);
+  await listarDocumentos(clienteId);
+}
+
+// ─────────────────────────────────────────────
+//  FLUXO PROCESSUAL
+// ─────────────────────────────────────────────
+
+const ETAPAS = [
+  '1. Recepção do Cliente',
+  '2. Coleta de Documentos',
+  '3. Análise do Caso',
+  '4. Produção da Petição',
+  '5. Revisão da Petição',
+  '6. Protocolo Administrativo',
+  '7. Protocolo Judicial',
+  '8. Concluído',
+];
+
+const COR_STATUS = { 'Pendente': 'gray', 'Em andamento': 'yellow', 'Concluído': 'green' };
+
+async function renderFluxo() {
+  const q = (document.getElementById('search-fluxo')?.value||'').toLowerCase();
+  loading(true);
+  const { data: clientes } = await sb.from('clientes').select('id,nome,processo,tipo,responsavel,status').order('nome');
+  const { data: etapas } = await sb.from('fluxo').select('*');
+  loading(false);
+
+  const lista = (clientes||[]).filter(c => !q || c.nome.toLowerCase().includes(q) || (c.processo||'').includes(q));
+  const el = document.getElementById('lista-fluxo');
+
+  if (!lista.length) { el.innerHTML = '<div class="empty"><p>Nenhum cliente encontrado</p></div>'; return; }
+
+  el.innerHTML = lista.map(cl => {
+    const etapasCliente = (etapas||[]).filter(e => e.cliente_id === cl.id);
+    const etapaAtual = etapasCliente.sort((a,b) => new Date(b.created_at)-new Date(a.created_at))[0];
+    const progresso = etapasCliente.filter(e=>e.status==='Concluído').length;
+    const pct = Math.round((progresso / ETAPAS.length) * 100);
+
+    const barras = ETAPAS.map((nome, i) => {
+      const etapa = etapasCliente.find(e => e.etapa === nome);
+      const st = etapa?.status || 'Pendente';
+      const cor = st === 'Concluído' ? '#2ecc71' : st === 'Em andamento' ? '#f0a500' : 'var(--border)';
+      return `<div title="${nome}: ${st}" style="flex:1;height:6px;background:${cor};border-radius:3px;cursor:pointer" onclick="abrirEtapa('${cl.id}','${nome.replace(/'/g,"\'")}')"></div>`;
+    }).join('');
+
+    return `<div class="section-card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div>
+          <div style="font-weight:600;font-size:.9rem">${cl.nome}</div>
+          <div style="font-size:.72rem;color:var(--muted2);margin-top:2px">${cl.processo||'Sem processo'} · ${cl.tipo||'—'} · ${cl.responsavel?cl.responsavel.split(' —')[0]:'Sem responsável'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.72rem;color:var(--muted2)">${progresso}/${ETAPAS.length} etapas</span>
+          ${statusBadge(cl.status||'Em andamento')}
+        </div>
+      </div>
+      <div style="display:flex;gap:3px;margin-bottom:10px">${barras}</div>
+      <div style="font-size:.76rem;color:var(--muted2);margin-bottom:10px">
+        ${etapaAtual ? `Última etapa: <strong style="color:var(--text)">${etapaAtual.etapa}</strong> — ${statusBadge(etapaAtual.status)}` : 'Nenhuma etapa registrada ainda'}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${ETAPAS.map(nome => {
+          const et = etapasCliente.find(e=>e.etapa===nome);
+          const st = et?.status||'Pendente';
+          return `<button class="btn btn-sm" style="font-size:.68rem;padding:4px 10px;background:${st==='Concluído'?'rgba(46,204,113,.1)':st==='Em andamento'?'rgba(240,165,0,.1)':'var(--card2)'};border:1px solid ${st==='Concluído'?'rgba(46,204,113,.3)':st==='Em andamento'?'rgba(240,165,0,.3)':'var(--border)'};color:${st==='Concluído'?'#2ecc71':st==='Em andamento'?'#f0a500':'var(--muted2)'}" onclick="abrirEtapa('${cl.id}','${nome.replace(/'/g,"\'")}')">${nome.split('. ')[1]}</button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function abrirEtapa(clienteId, nomeEtapa) {
+  const { data: etapas } = await sb.from('fluxo').select('*').eq('cliente_id', clienteId).eq('etapa', nomeEtapa);
+  const etapa = etapas?.[0];
+  document.getElementById('etapa-id').value = etapa?.id || '';
+  document.getElementById('etapa-cliente-id').value = clienteId;
+  document.getElementById('etapa-nome').value = nomeEtapa;
+  document.getElementById('etapa-status').value = etapa?.status || 'Pendente';
+  document.getElementById('etapa-responsavel').value = etapa?.responsavel || '';
+  document.getElementById('etapa-inicio').value = etapa?.data_inicio || today();
+  document.getElementById('etapa-conclusao').value = etapa?.data_conclusao || '';
+  document.getElementById('etapa-obs').value = etapa?.obs || '';
+  document.getElementById('metapa-title').textContent = nomeEtapa;
+  openModal('modal-etapa');
+}
+
+async function salvarEtapa() {
+  const id = document.getElementById('etapa-id').value;
+  const clienteId = document.getElementById('etapa-cliente-id').value;
+  const obj = {
+    cliente_id: clienteId,
+    etapa: document.getElementById('etapa-nome').value,
+    status: document.getElementById('etapa-status').value,
+    responsavel: document.getElementById('etapa-responsavel').value,
+    data_inicio: document.getElementById('etapa-inicio').value || null,
+    data_conclusao: document.getElementById('etapa-conclusao').value || null,
+    obs: document.getElementById('etapa-obs').value.trim(),
+  };
+  loading(true);
+  const { error } = id
+    ? await sb.from('fluxo').update(obj).eq('id', id)
+    : await sb.from('fluxo').insert(obj);
+  loading(false);
+  if (error) { alert('Erro: ' + error.message); return; }
+  closeModal('modal-etapa');
+  renderFluxo();
+}
 
 // ─────────────────────────────────────────────
 //  MOVIMENTAÇÕES PROCESSUAIS + E-MAIL
