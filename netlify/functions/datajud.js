@@ -39,8 +39,6 @@ exports.handler = async (event) => {
 
   const url = `https://api-publica.datajud.cnj.jus.br/${alias}/_search`;
 
-  // Aceita número com ou sem máscara — normaliza para o formato CNJ com máscara
-  // Ex: 08009222120268180066 → 0800922-21.2026.8.18.0066
   let numeroNorm = numero.trim();
   const somenteDigitos = numeroNorm.replace(/\D/g, '');
   if (somenteDigitos.length === 20) {
