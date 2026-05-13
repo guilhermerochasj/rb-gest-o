@@ -321,7 +321,7 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
           <button class="btn btn-gold" onclick="openNovoCliente()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Cliente</button>
         </div>
         <div class="search-bar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="search-clientes" placeholder="Buscar por nome, CPF ou processo…" oninput="renderClientes()"></div>
-        <div class="section-card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>CPF</th><th>Processo</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tbody-clientes"></tbody></table></div></div>
+        <div class="section-card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>CPF</th><th>Processo</th><th>Tipo</th><th>Responsável</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tbody-clientes"></tbody></table></div></div>
       </div>
 
       <!-- HONORÁRIOS -->
@@ -348,7 +348,13 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
       <div id="page-anotacoes" class="page">
         <div class="page-header">
           <div><h2>Anotações</h2><p>Notas por processo e cliente</p></div>
-          <button class="btn btn-gold" onclick="openNovaNota()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Anotação</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-outline" onclick="enviarResumoDiario()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+              Resumo Diário
+            </button>
+            <button class="btn btn-gold" onclick="openNovaNota()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Anotação</button>
+          </div>
         </div>
         <div class="search-bar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="search-notas" placeholder="Buscar anotações…" oninput="renderNotas()"></div>
         <div id="lista-notas"></div>
@@ -480,7 +486,17 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
       <div class="form-group"><label>Status</label><select id="c-status"><option>Em andamento</option><option>Aguardando perícia</option><option>Aguardando sentença</option><option>Recurso</option><option>Ganho</option><option>Encerrado</option></select></div>
       <div class="form-group"><label>Município</label><input type="text" id="c-municipio" placeholder="São Julião – PI"></div>
     </div>
-    <div class="form-group"><label>Observações</label><textarea id="c-obs"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Responsável pelo Processo</label>
+        <select id="c-responsavel">
+          <option value="">Selecione…</option>
+          <option value="Guilherme — guilhermerochasj@gmail.com">Guilherme</option>
+          <option value="Rubens — rubensfilho5@hotmail.com">Rubens</option>
+          <option value="Colaboradora — advaparecidasl@gmail.com">Colaboradora</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Observações</label><textarea id="c-obs"></textarea></div>
+    </div>
     <div class="form-actions"><button class="btn btn-outline" onclick="closeModal('modal-cliente')">Cancelar</button><button class="btn btn-gold" onclick="salvarCliente()">Salvar</button></div>
   </div>
 </div>
@@ -526,6 +542,40 @@ tbody td { padding: 11px 10px; vertical-align: middle; }
     <div class="form-row"><div class="form-group"><label>Cliente / Processo</label><select id="n-cliente"><option value="">Geral / Escritório</option></select></div><div class="form-group"><label>Prioridade</label><select id="n-prioridade"><option>Normal</option><option>Alta</option><option>Urgente</option></select></div></div>
     <div class="form-group"><label>Anotação *</label><textarea id="n-corpo" style="min-height:110px"></textarea></div>
     <div class="form-actions"><button class="btn btn-outline" onclick="closeModal('modal-nota')">Cancelar</button><button class="btn btn-gold" onclick="salvarNota()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL MOVIMENTAÇÃO -->
+<div class="modal-bg" id="modal-movimentacao">
+  <div class="modal">
+    <h3 id="mmov-title">Registrar Movimentação</h3>
+    <input type="hidden" id="mov-cliente-id">
+    <div class="form-group">
+      <label>Cliente / Processo</label>
+      <input type="text" id="mov-cliente-info" readonly style="opacity:.6;cursor:not-allowed">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Responsável</label>
+        <input type="text" id="mov-responsavel" readonly style="opacity:.6;cursor:not-allowed">
+      </div>
+      <div class="form-group">
+        <label>Data/Hora</label>
+        <input type="datetime-local" id="mov-datahora">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Movimentação *</label>
+      <textarea id="mov-descricao" placeholder="Descreva a movimentação processual…" style="min-height:120px"></textarea>
+    </div>
+    <div style="background:var(--card2);border:1px solid var(--border-gold);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.78rem;color:var(--muted2)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+      Um e-mail será enviado automaticamente para todos os responsáveis ao salvar.
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-movimentacao')">Cancelar</button>
+      <button class="btn btn-gold" onclick="salvarMovimentacao()">Salvar e Notificar</button>
+    </div>
   </div>
 </div>
 
@@ -656,10 +706,12 @@ async function renderClientes() {
     <td style="font-size:.76rem">${c.cpf||'—'}</td>
     <td style="font-size:.74rem">${c.processo||'—'}</td>
     <td style="font-size:.74rem">${c.tipo||'—'}</td>
+    <td style="font-size:.74rem">${c.responsavel ? c.responsavel.split(' —')[0] : '—'}</td>
     <td>${statusBadge(c.status||'Em andamento')}</td>
     <td><div style="display:flex;gap:5px">
       <button class="btn btn-outline btn-sm" onclick="editCliente('${c.id}')">Editar</button>
       <button class="btn btn-danger btn-sm" onclick="delCliente('${c.id}')">Del</button>
+      <button class="btn btn-gold btn-sm" onclick="openNovaMovimentacao('${c.id}')">+ Mov.</button>
     </div></td>
   </tr>`).join('');
 }
@@ -677,7 +729,7 @@ async function editCliente(id) {
   if (!data) return;
   document.getElementById('mc-title').textContent = 'Editar Cliente';
   document.getElementById('c-id').value=data.id;
-  ['nome','cpf','tel','email','processo','municipio','obs'].forEach(k=>document.getElementById('c-'+k).value=data[k]||'');
+  ['nome','cpf','tel','email','processo','municipio','obs'].forEach(k=>document.getElementById('c-'+k).value=data[k]||''); document.getElementById('c-responsavel').value=data.responsavel||'';
   document.getElementById('c-tipo').value=data.tipo||''; document.getElementById('c-status').value=data.status||'Em andamento';
   openModal('modal-cliente');
 }
@@ -686,7 +738,7 @@ async function salvarCliente() {
   const nome = document.getElementById('c-nome').value.trim();
   if (!nome) { alert('Informe o nome.'); return; }
   const id = document.getElementById('c-id').value;
-  const obj = { nome, cpf:document.getElementById('c-cpf').value.trim(), tel:document.getElementById('c-tel').value.trim(), email:document.getElementById('c-email').value.trim(), processo:document.getElementById('c-processo').value.trim(), tipo:document.getElementById('c-tipo').value, status:document.getElementById('c-status').value, municipio:document.getElementById('c-municipio').value.trim(), obs:document.getElementById('c-obs').value.trim() };
+  const obj = { nome, cpf:document.getElementById('c-cpf').value.trim(), tel:document.getElementById('c-tel').value.trim(), email:document.getElementById('c-email').value.trim(), processo:document.getElementById('c-processo').value.trim(), tipo:document.getElementById('c-tipo').value, status:document.getElementById('c-status').value, municipio:document.getElementById('c-municipio').value.trim(), obs:document.getElementById('c-obs').value.trim(), responsavel:document.getElementById('c-responsavel').value };
   loading(true);
   const {error} = id ? await sb.from('clientes').update(obj).eq('id',id) : await sb.from('clientes').insert(obj);
   loading(false);
@@ -992,6 +1044,93 @@ const SUPA_KEY = 'sb_publishable_AyWpOhJtRs5L-L9mXfxXpg_ThQfG0Fb';
   document.getElementById('login-screen').style.display='flex';
   selectProfile('colaborador');
 })();
+
+// ─────────────────────────────────────────────
+//  MOVIMENTAÇÕES PROCESSUAIS + E-MAIL
+// ─────────────────────────────────────────────
+
+async function openNovaMovimentacao(clienteId) {
+  const {data:cl} = await sb.from('clientes').select('*').eq('id', clienteId).single();
+  if (!cl) return;
+  document.getElementById('mov-cliente-id').value = clienteId;
+  document.getElementById('mov-cliente-info').value = cl.nome + (cl.processo ? ' — ' + cl.processo : '');
+  document.getElementById('mov-responsavel').value = cl.responsavel ? cl.responsavel.split(' —')[0] : 'Não definido';
+  // data/hora atual
+  const agora = new Date();
+  agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+  document.getElementById('mov-datahora').value = agora.toISOString().slice(0,16);
+  document.getElementById('mov-descricao').value = '';
+  openModal('modal-movimentacao');
+}
+
+async function salvarMovimentacao() {
+  const clienteId = document.getElementById('mov-cliente-id').value;
+  const descricao = document.getElementById('mov-descricao').value.trim();
+  const dataHora = document.getElementById('mov-datahora').value;
+  if (!descricao) { alert('Descreva a movimentação.'); return; }
+
+  const {data:cl} = await sb.from('clientes').select('*').eq('id', clienteId).single();
+  if (!cl) return;
+
+  // Salvar movimentação como anotação vinculada ao cliente
+  loading(true);
+  const titulo = `Movimentação — ${new Date(dataHora).toLocaleDateString('pt-BR')}`;
+  const {error} = await sb.from('notas').insert({
+    titulo,
+    cliente_id: clienteId,
+    prioridade: 'Alta',
+    corpo: descricao,
+  });
+  loading(false);
+
+  if (error) { alert('Erro ao salvar: ' + error.message); return; }
+
+  // Enviar e-mail de notificação
+  try {
+    const dtFormatada = new Date(dataHora).toLocaleString('pt-BR');
+    await fetch('/.netlify/functions/enviar-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tipo: 'movimentacao',
+        cliente: cl.nome,
+        processo: cl.processo || '',
+        area: cl.tipo || '',
+        responsavel: cl.responsavel ? cl.responsavel.split(' —')[0] : '—',
+        movimentacao: descricao,
+        dataHora: dtFormatada,
+      }),
+    });
+  } catch(e) { console.warn('Falha no e-mail:', e); }
+
+  closeModal('modal-movimentacao');
+  alert('Movimentação registrada e e-mail enviado!');
+}
+
+async function enviarResumoDiario() {
+  // Busca anotações de hoje com título "Movimentação"
+  const hoje = new Date().toISOString().slice(0,10);
+  const {data:notas} = await sb.from('notas').select('*, clientes(nome,processo,tipo,responsavel)').ilike('titulo','Movimentação%').gte('created_at', hoje + 'T00:00:00').lte('created_at', hoje + 'T23:59:59');
+
+  const processos = (notas||[]).map(n => ({
+    cliente: n.clientes?.nome || '—',
+    processo: n.clientes?.processo || '—',
+    area: n.clientes?.tipo || '—',
+    responsavel: n.clientes?.responsavel ? n.clientes.responsavel.split(' —')[0] : '—',
+    movimentacao: n.corpo || '—',
+  }));
+
+  try {
+    const resp = await fetch('/.netlify/functions/enviar-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tipo: 'resumo_diario', processos }),
+    });
+    const data = await resp.json();
+    if (data.ok) alert('Resumo diário enviado com sucesso!');
+    else alert('Erro ao enviar resumo: ' + (data.erro || 'desconhecido'));
+  } catch(e) { alert('Falha no envio: ' + e.message); }
+}
 
 // ─────────────────────────────────────────────
 //  MONITORAMENTO PROCESSUAL — DataJud
