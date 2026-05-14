@@ -119,3 +119,13 @@ exports.handler = async (event) => {
     return { statusCode: 500, headers, body: JSON.stringify({ erro: 'Erro interno', detalhe: err.message }) };
   }
 };
+// netlify/functions/datajud.js
+// Função serverless que consulta o DataJud pelo servidor (resolve CORS)
+
+const DATAJUD_KEY = 'cDZHYzlZa0JadVREZDJCendQbXY6SkJlTzNjLV9TRENyQk1RdnFKZGRQdw==';
+
+const TRIBUNAIS = {
+  tjpi: 'api_publica_tjpi',
+  trf1: 'api_publica_trf1',
+  trt22: 'api_publica_trt22',
+};
