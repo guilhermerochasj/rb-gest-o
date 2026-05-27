@@ -1070,5 +1070,6 @@ async function consultarTodos(){const container=document.getElementById('mon-lis
 async function consultarCliente(clienteId,numero){const tribunal=document.getElementById('trib-'+clienteId).value;const container=document.getElementById('mon-res-'+clienteId);container.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--muted2);padding:6px 0"><div class="spinner" style="width:16px;height:16px;border-width:2px"></div> Consultando...</div>';const data=await chamarDatajud(numero,tribunal);renderResultado(data,container);}
 async function renderMonitoramento(){await consultarTodos();}
 </script>
+<script src="/checklist-patch.js"></script>
 </body>
 </html>
